@@ -4,7 +4,7 @@ import os, sys, argparse, logging
 import fcntl
 from termcolor import colored
 import vagrant
-import subprocess, threading
+import subprocess, threading, multiprocessing
 
 import smtplib
 from email.mime.text import MIMEText
@@ -199,21 +199,42 @@ def reset_boxes(available_boxes):
         logging.info("box[name={}] halt".format(b))
         vagrant.Vagrant().halt(vm_name=b)
 
-def run_boxes(available_boxes, args):
-    boxes = {}
+def box_runner(opts):
+    args = opts["args"]
+    name = opts["name"]
+    q    = opts["queue"]
+
     boxes_args = {
-        "timeout": args.timeout,
-        "no_pkg": args.no_pkg,
-        "no_cmake": args.no_cmake,
+        "timeout":      args.timeout,
+        "no_pkg":       args.no_pkg,
+        "no_cmake":     args.no_cmake,
         "no_autotools": args.no_autotools,
     }
-    for name in available_boxes:
-        box = Box(name, **boxes_args)
-        boxes = { **boxes, **box.run() }
+
+    q.put(Box(name, **boxes_args).run())
+
+def run_boxes(available_boxes, args):
+    manager = multiprocessing.Manager()
+    queue = manager.Queue()
+
+    boxes_configurations = []
+    for b in available_boxes:
+        boxes_configurations.append({
+            "args":  args,
+            "name":  b,
+            "queue": queue
+        })
+
+    pool = multiprocessing.Pool(processes=args.workers)
+    pool.map(box_runner, boxes_configurations)
+
+    boxes_results = {}
+    while not queue.empty():
+        boxes_results = { **boxes_results, **queue.get(), }
 
     failed_boxes = 0
     unique_failed_tests = []
-    for box, result in boxes.items():
+    for box, result in boxes_results.items():
         if result['status']:
             continue
         failed_boxes += 1
@@ -264,6 +285,8 @@ def parse_args():
                    vagrant synced_folders via rsync syncs only at start,
                    and if you change sources you should, use --reset
                    """)
+    p.add_argument("--workers", type=int, default=1,
+                   help="Run boxes configurations in parallel (default: %(default)s)")
     return p.parse_args()
 
 def configure_logging(verbose, fmt):
@@ -298,6 +321,8 @@ def main():
             boxes = filter_boxes(args.boxes, available_boxes)
         else:
             boxes = available_boxes
+
+        logging.debug("Enabled boxes: {}".format(boxes))
 
         if args.reset:
             reset_boxes(boxes)
