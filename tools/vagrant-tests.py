@@ -305,14 +305,14 @@ def main():
     args = parse_args()
     os.chdir(args.root)
 
-    configure_logging(args.verbose, args.logging_format)
-    logging.debug("Args: {}".format(sys.argv))
-    logging.info("root={}".format(args.root))
-
     lock = None
     if not args.no_lock:
         lock = open(".vagrant/lock", "w")
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+    configure_logging(args.verbose, args.logging_format)
+    logging.debug("Args: {}".format(sys.argv))
+    logging.info("root={}".format(args.root))
 
     try:
         available_boxes = boxes_list()
