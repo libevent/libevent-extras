@@ -98,13 +98,13 @@ class Box:
                 vm_name=self.name,
                 provision=False,
             )
-            self.box.provision()
+            self.box.provision(vm_name=self.name)
         except subprocess.CalledProcessError:
             return False
         return True
     def halt(self):
         try:
-            self.box.halt()
+            self.box.halt(vm_name=self.name)
         except subprocess.CalledProcessError:
             pass
 
