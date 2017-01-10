@@ -67,7 +67,7 @@ class Box:
 
         def target():
             self.debug("starting")
-            self.last = self.up()
+            self.last = self.provision()
             self.debug("finished: result={}".format(self.last))
 
         thread = threading.Thread(target=target)
@@ -92,12 +92,13 @@ class Box:
             result['failed_tests'] = self.parse_logs(which)
         return result
 
-    def up(self):
+    def provision(self):
         try:
             self.box.up(
                 vm_name=self.name,
-                provision=True,
+                provision=False,
             )
+            self.box.provision()
         except subprocess.CalledProcessError:
             return False
         return True
