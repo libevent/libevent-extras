@@ -13,11 +13,19 @@ from email.mime.multipart import MIMEMultipart
 from glob import glob
 import re
 
+import datetime
+
 def unlink(path):
     try:
         os.unlink(path)
     except FileNotFoundError:
         pass
+
+start = "{:%Y-%m-%d_%H%I%S}".format(datetime.datetime.now())
+def log_path(base):
+    return ".vagrant/{}_{}.log".format(base, start)
+def logs():
+    return glob(".vagrant/*_{}.log".format(start))
 
 class Box:
     def __init__(self, name, **kwargs):
@@ -146,7 +154,7 @@ class Box:
         unlink(log)
         return vagrant.make_file_cm(log)
     def _log(self, which, std):
-        return ".vagrant/{}_{}_{}.log".format(self.name, which, std)
+        return log_path("{}_{}_{}".format(self.name, which, std))
 
     @staticmethod
     def _read(path):
@@ -160,7 +168,7 @@ def send_email(failed_boxes, failed_tests):
     logging.debug("Sending report to {}".format(to))
 
     msg = MIMEMultipart()
-    with open(".vagrant/tests.log") as f:
+    with open(log_path("tests")) as f:
         msg.attach(MIMEText(f.read(), _charset="UTF-8"))
     subject = "libevent. tests"
     if failed_boxes > 0:
@@ -171,7 +179,7 @@ def send_email(failed_boxes, failed_tests):
         subject += ". success"
     msg['Subject'] = subject
     msg['To'] = to
-    for file in glob(".vagrant/*.log"):
+    for file in logs():
         f = open(file, "rb")
         m = MIMEText(f.read(), _charset="UTF-8")
         f.close()
@@ -296,9 +304,7 @@ def configure_logging(verbose, fmt):
         level=logging.DEBUG if verbose else logging.INFO,
     )
 
-    unlink(".vagrant/tests.log")
-
-    fh = logging.FileHandler(".vagrant/tests.log")
+    fh = logging.FileHandler(log_path("tests"))
     fh.setFormatter(logging.Formatter(fmt))
     logging.getLogger().addHandler(fh)
 
