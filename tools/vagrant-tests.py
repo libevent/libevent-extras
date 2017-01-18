@@ -15,6 +15,9 @@ import re
 
 import datetime
 
+import git
+
+
 def unlink(path):
     try:
         os.unlink(path)
@@ -317,9 +320,15 @@ def main():
         lock = open(".vagrant/lock", "w")
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
 
+    libevent_repo = git.repo.Repo(args.root)
+
     configure_logging(args.verbose, args.logging_format)
     logging.debug("Args: {}".format(sys.argv))
     logging.info("root={}".format(args.root))
+    logging.info("root last commit={} ({})".format(
+        colored(libevent_repo.git.log(-1, oneline=True), "green"),
+        colored(libevent_repo.git.describe(), "green"),
+    ))
 
     try:
         available_boxes = boxes_list()
