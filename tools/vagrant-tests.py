@@ -170,9 +170,12 @@ def send_email(failed_boxes, failed_tests):
 
     logging.debug("Sending report to {}".format(to))
 
+    # XXX: make it re-less
+    ansi = re.compile(r"\x1b[^m]*m")
+
     msg = MIMEMultipart()
     with open(log_path("tests")) as f:
-        msg.attach(MIMEText(f.read(), _charset="UTF-8"))
+        msg.attach(MIMEText(ansi.sub("", f.read()), _charset="UTF-8"))
     subject = "libevent. tests"
     if failed_boxes > 0:
         subject += ". failed ({} failed boxes, {} failed tests)".format(
