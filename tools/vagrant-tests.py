@@ -98,9 +98,13 @@ class Box:
             self.info(colored("PASSED {}".format(which), "green"))
             result['status'] = True
         else:
-            self.info(colored("FAILED {}".format(which), "red"))
             result['status'] = False
             result['failed_tests'] = self.parse_logs(which)
+
+            if not result['failed_tests']:
+                self.info(colored("FAILED COMPILING {}".format(which), "red"))
+            else:
+                self.info(colored("FAILED {}".format(which), "red"))
         return result
 
     def provision(self):
