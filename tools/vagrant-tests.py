@@ -32,14 +32,16 @@ def logs():
 
 class Box:
     def __init__(self, name, **kwargs):
-        self.name = name
-        self.timeout = kwargs.pop('timeout', 0)
-        self.no_pkg = kwargs.pop('no_pkg', False)
-        self.no_cmake = kwargs.pop('no_cmake', False)
-        self.no_autotools = kwargs.pop('no_autotools', False)
-        self._env = os.environ.copy()
-        self.last = False
-        self.box = None
+        self.name          =  name
+        self._env          =  os.environ.copy()
+        self.last          =  False
+        self.box           =  None
+
+        self.timeout       =  kwargs.pop('timeout', 0)
+        self.no_pkg        =  kwargs.pop('no_pkg', False)
+        self.no_cmake      =  kwargs.pop('no_cmake', False)
+        self.no_autotools  =  kwargs.pop('no_autotools', False)
+        self.reset         =  kwargs.pop('reset_on_finish', False)
 
     def run(self):
         result = {}
@@ -90,6 +92,9 @@ class Box:
             self.warning("halting")
             self.halt()
             thread.join()
+        if self.reset:
+            self.warning("halting")
+            self.halt()
 
         self.box = None
 
@@ -213,8 +218,8 @@ def filter_boxes(boxes, available_boxes):
             raise ValueError(b)
     return boxes
 
-def reset_boxes(available_boxes):
-    for b in available_boxes:
+def reset_boxes(boxes):
+    for b in boxes:
         logging.info("box[name={}] halt".format(b))
         vagrant.Vagrant().halt(vm_name=b)
 
@@ -224,10 +229,11 @@ def box_runner(opts):
     q    = opts["queue"]
 
     boxes_args = {
-        "timeout":      args.timeout,
-        "no_pkg":       args.no_pkg,
-        "no_cmake":     args.no_cmake,
-        "no_autotools": args.no_autotools,
+        "timeout"         :  args.timeout,
+        "no_pkg"          :  args.no_pkg,
+        "no_cmake"        :  args.no_cmake,
+        "no_autotools"    :  args.no_autotools,
+        "reset_on_finish" :  args.reset_on_finish,
     }
 
     q.put(Box(name, **boxes_args).run())
@@ -303,6 +309,11 @@ def parse_args():
                    this will halt all boxes before running, since
                    vagrant synced_folders via rsync syncs only at start,
                    and if you change sources you should, use --reset
+                   """)
+    p.add_argument("--reset-on-finish", action="store_true",
+                   help="""
+                   this will halt box after running tests,
+                   to reduce resource usage
                    """)
     p.add_argument("--workers", type=int, default=1,
                    help="Run boxes configurations in parallel (default: %(default)s)")
