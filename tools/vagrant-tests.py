@@ -344,7 +344,7 @@ def main():
     logging.debug("Args: {}".format(sys.argv))
     logging.info("root={}".format(args.root))
     logging.info("root last commit={} ({})".format(
-        colored(libevent_repo.git.log(-1, oneline=True), "green"),
+        colored(libevent_repo.git.log(-1, oneline=True, no_show_signature=True), "green"),
         colored(libevent_repo.git.describe(), "green"),
     ))
 
