@@ -249,7 +249,7 @@ Vagrant.configure("2") do |config|
 
         export CTEST_TEST_TIMEOUT=1800
         export CTEST_OUTPUT_ON_FAILURE=1
-        export CTEST_PARALLEL_LEVEL=20
+        export CTEST_PARALLEL_LEVEL=5
         cmake --build . --target verify
       SHELL
     end
