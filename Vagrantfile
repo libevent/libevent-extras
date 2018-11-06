@@ -25,7 +25,7 @@ Vagrant.configure("2") do |config|
   system('git archive --prefix=libevent/ --output=.vagrant/libevent.tar HEAD')
 
   config.vm.provider "virtualbox" do |vb|
-    vb.memory = "512"
+    vb.memory = "1024"
 
     # otherwise osx fails, anyway we do not need this
     vb.customize ["modifyvm", :id, "--usb", "off"]
@@ -319,11 +319,6 @@ Vagrant.configure("2") do |config|
   # - issues with timers (not enough allowed error)
   config.vm.define "win" do |win|
     system('tar --overwrite --transform=s/libevent/libevent-win/ -xf .vagrant/libevent.tar -C .vagrant/')
-
-    # 512MB not enough after libtool install, huh
-    win.vm.provider "virtualbox" do |vb|
-      vb.memory = "1024"
-    end
 
     # windows does not have rsync builtin, let's use virtualbox for now
     win.vm.synced_folder ".vagrant/libevent-win", "/vagrant",
