@@ -120,13 +120,13 @@ Vagrant.configure("2") do |config|
   config.vm.define "netbsd" do |netbsd|
     system('tar --overwrite --transform=s/libevent/libevent-netbsd/ -xf .vagrant/libevent.tar -C .vagrant/')
 
-    netbsd.vm.box = "kja/netbsd-7-amd64"
+    netbsd.vm.box = "mcandre/netbsd-amd64"
     netbsd.vm.synced_folder ".vagrant/libevent-netbsd", "/vagrant",
       type: "rsync", group: "wheel"
 
     if ENV['NO_PKG'] != "true"
       netbsd.vm.provision "shell", inline: <<-SHELL
-        export PKG_PATH="ftp://ftp.netbsd.org/pub/pkgsrc/packages/NetBSD/x86_64/7.0_2016Q2/All/"
+        export PKG_PATH="ftp://ftp.netbsd.org/pub/pkgsrc/packages/NetBSD/x86_64/7.1_2018Q2/All/"
         pkg_add ncurses ninja-build automake cmake libtool
       SHELL
     end
