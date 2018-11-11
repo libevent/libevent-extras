@@ -331,7 +331,6 @@ def configure_logging(verbose, fmt):
 
 def main():
     args = parse_args()
-    os.chdir(args.root)
 
     lock = None
     if not args.no_lock:
@@ -339,6 +338,9 @@ def main():
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
 
     libevent_repo = git.repo.Repo(args.root)
+
+    # TODO: move git-archive out from Vagrantfile into this script
+    os.putenv('GIT_DIR', libevent_repo.git_dir)
 
     configure_logging(args.verbose, args.logging_format)
     logging.debug("Args: {}".format(sys.argv))
