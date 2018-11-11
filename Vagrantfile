@@ -14,6 +14,9 @@
 # - NO_PKG        -- do not install packages
 # - NO_CMAKE      -- do not run with cmake
 # - NO_AUTOTOOLS  -- do not run with autoconf/automake
+#
+# IMPLICIT ENVIRONMENT:
+# - GIT_DIR       -- for git-archive
 
 Vagrant.configure("2") do |config|
   # to allow running boxes provisions in parallel, we can't share the same dirs
