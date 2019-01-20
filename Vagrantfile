@@ -91,7 +91,7 @@ Vagrant.configure("2") do |config|
 
     if ENV['NO_PKG'] != "true"
       freebsd.vm.provision "shell", inline: <<-SHELL
-        pkg install --yes openssl cmake ninja automake autotools
+        pkg install --yes openssl cmake ninja automake autotools gmake
       SHELL
     end
 
@@ -115,7 +115,7 @@ Vagrant.configure("2") do |config|
         cd /vagrant
         ./autogen.sh
         ./configure
-        make -j20 verify
+        gmake -j20 verify
       SHELL
     end
   end
