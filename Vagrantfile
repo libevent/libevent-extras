@@ -379,7 +379,7 @@ Vagrant.configure("2") do |config|
         $env:CTEST_TEST_TIMEOUT = "1800"
         $env:CTEST_OUTPUT_ON_FAILURE = "1"
         $env:CTEST_PARALLEL_LEVEL = "1"
-        cmake --build . --target verify
+        cmake --build . --target verify -- /nologo /verbosity:minimal
       SHELL
     end
 
