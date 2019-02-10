@@ -280,16 +280,17 @@ Vagrant.configure("2") do |config|
     centos.vm.box = "centos/7"
     if ENV['NO_PKG'] != "true"
       centos.vm.provision "shell", inline: <<-SHELL
-        echo "[russianfedora]" > /etc/yum.repos.d/russianfedora.repo
-        echo name=russianfedora >> /etc/yum.repos.d/russianfedora.repo
-        echo baseurl=http://mirror.yandex.ru/fedora/russianfedora/russianfedora/free/el/releases/7/Everything/x86_64/os/ >> /etc/yum.repos.d/russianfedora.repo
-        echo enabled=1 >> /etc/yum.repos.d/russianfedora.repo
-        echo gpgcheck=0 >> /etc/yum.repos.d/russianfedora.repo
+        echo "[fedora]" > /etc/yum.repos.d/fedora.repo
+        echo name=fedora >> /etc/yum.repos.d/fedora.repo
+        echo baseurl=https://download-ib01.fedoraproject.org/pub/epel/7/x86_64/ >> /etc/yum.repos.d/fedora.repo
+        echo enabled=1 >>  /etc/yum.repos.d/fedora.repo
+        echo gpgcheck=0 >> /etc/yum.repos.d/fedora.repo
       SHELL
       centos.vm.provision "shell", inline: <<-SHELL
         yum -y install zlib-devel openssl-devel python
-        yum -y install gcc cmake ninja-build
+        yum -y install gcc cmake3 ninja-build
         yum -y install autoconf automake libtool
+        ln -s /usr/bin/cmake3 /usr/bin/cmake
       SHELL
     end
 
