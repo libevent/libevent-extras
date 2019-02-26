@@ -233,8 +233,9 @@ Vagrant.configure("2") do |config|
       osx.vm.provision "shell", privileged: false, inline: <<-SHELL
         ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-        brew uninstall libtool
-        brew install libtool openssl ninja cmake autoconf automake
+        for pkg in libtool openssl ninja cmake autoconf automake; do
+          brew install $pkg || brew upgrade $pkg
+        done
       SHELL
     end
 
