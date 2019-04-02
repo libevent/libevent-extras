@@ -373,9 +373,12 @@ Vagrant.configure("2") do |config|
         mkdir -p .cmake-vagrant
         cd .cmake-vagrant
         cmake -G "Visual Studio 12" ..
+        if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
 
         cmake --build . --target clean
+        if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
         cmake --build .
+        if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
 
         $env:CTEST_TEST_TIMEOUT = "1800"
         $env:CTEST_OUTPUT_ON_FAILURE = "1"
