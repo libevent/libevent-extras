@@ -377,7 +377,7 @@ Vagrant.configure("2") do |config|
 
         cmake --build . --target clean
         if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
-        cmake --build .
+        cmake --build . -- /nologo /verbosity:minimal
         if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
 
         $env:CTEST_TEST_TIMEOUT = "1800"
