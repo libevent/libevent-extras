@@ -228,7 +228,7 @@ Vagrant.configure("2") do |config|
     osx.vm.synced_folder ".vagrant/libevent-osx", "/vagrant",
       type: "rsync", group: "wheel"
 
-    osx.vm.box = "jhcook/osx-elcapitan-10.11"
+    osx.vm.box = "yzgyyang/macOS-10.14"
     if ENV['NO_PKG'] != "true"
       osx.vm.provision "shell", privileged: false, inline: <<-SHELL
         ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
