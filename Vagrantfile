@@ -31,6 +31,9 @@ Vagrant.configure("2") do |config|
     vb.memory = "1024"
 
     # otherwise osx fails, anyway we do not need this
+    # NOTE: also it requires few extra commands:
+    # - VBoxManage setextradata
+    # - VBoxManage modifyvm "$name" --cpu-profile "Intel Core i7-6700K"
     vb.customize ["modifyvm", :id, "--usb", "off"]
     vb.customize ["modifyvm", :id, "--usbehci", "off"]
   end
