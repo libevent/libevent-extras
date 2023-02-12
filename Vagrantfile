@@ -48,7 +48,7 @@ Vagrant.configure("2") do |config|
     if ENV['NO_PKG'] != "true"
       ubuntu.vm.provision "shell", inline: <<-SHELL
         apt-get update
-        apt-get install -y zlib1g-dev libssl-dev python2.7
+        apt-get install -y zlib1g-dev libssl-dev python3
         apt-get install -y build-essential cmake ninja-build
         apt-get install -y autoconf automake libtool
       SHELL
@@ -341,7 +341,7 @@ Vagrant.configure("2") do |config|
         choco install -y cygwin cyg-get
         choco install -y cmake
         choco install -y cmake.install
-        choco install -y python2
+        choco install -y python3
       SHELL
 
       # chocolatey openssl.light package does not contains headers
@@ -367,7 +367,7 @@ Vagrant.configure("2") do |config|
 
     if ENV['NO_CMAKE'] != "true"
       win.vm.provision "shell", privileged: false, inline: <<-SHELL
-        $env:PATH="/Program Files/CMake/bin;/tools/python2;$($env:PATH)"
+        $env:PATH="/Program Files/CMake/bin;/tools/python3;$($env:PATH)"
 
         cd /vagrant
         Remove-Item -Recurse -Force .cmake-vagrant
