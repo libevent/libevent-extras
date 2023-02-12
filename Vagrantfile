@@ -325,6 +325,14 @@ Vagrant.configure("2") do |config|
 
   # known failures:
   # - issues with timers (not enough allowed error)
+  #
+  # NOTE:
+  # - you need to download C++ component for cmake as described here [1].
+  #
+  #     [1]: https://stackoverflow.com/questions/51668676/cmake-visual-studio-15-2017-could-not-find-any-instance-of-visual-studio
+  #
+  # - autotools is not supported
+  #   (get it from C:\opscode\chef\embedded\mingw\bin)
   config.vm.define "win" do |win|
     system('tar --overwrite --transform=s/libevent/libevent-win/ -xf .vagrant/libevent.tar -C .vagrant/')
 
@@ -332,14 +340,13 @@ Vagrant.configure("2") do |config|
     win.vm.synced_folder ".vagrant/libevent-win", "/vagrant",
       type: "virtualbox"
 
-    win.vm.box = "senglin/win-10-enterprise-vs2015community"
+    win.vm.box = "gusztavvargadr/visual-studio"
     if ENV['NO_PKG'] != "true"
       # box with vs2015 does not have C++ support, so let's install it manually
       # plus chocolatey that includes in this box, can't handle sha1 checksum for
       # cmake.install, so let's update it<
       win.vm.provision "shell", inline: <<-SHELL
         choco upgrade -y chocolatey -pre -f
-        choco install -y VisualStudioCommunity2013
         choco install -y openssl.light
         choco install -y cygwin cyg-get
         choco install -y cmake
@@ -363,8 +370,8 @@ Vagrant.configure("2") do |config|
 
         $env:PATH="/tools/cygwin/bin;$($env:PATH);/tools/cygwin"
 
-        cygwinsetup --root c:/tools/cygwin/ --local-package-dir c:/tools/cygwin/packages/ --no-desktop --no-startmenu --verbose --quiet-mode --download --packages aclocal,automake,autoconf,gcc-core,libtool,make,python,openssl-devel
-        cygwinsetup --root c:/tools/cygwin/ --local-package-dir c:/tools/cygwin/packages/ --no-desktop --no-startmenu --verbose --quiet-mode --local-install --packages aclocal,automake,autoconf,gcc-core,libtool,make,python,openssl-devel
+        cygwinsetup --root c:/tools/cygwin/ --local-package-dir c:/tools/cygwin/packages/ --no-desktop --no-startmenu --verbose --quiet-mode --download --packages automake,autoconf,gcc-core,libtool,make,python,openssl-devel
+        cygwinsetup --root c:/tools/cygwin/ --local-package-dir c:/tools/cygwin/packages/ --no-desktop --no-startmenu --verbose --quiet-mode --local-install --packages automake,autoconf,gcc-core,libtool,make,python,openssl-devel
       SHELL
     end
 
@@ -376,7 +383,7 @@ Vagrant.configure("2") do |config|
         Remove-Item -Recurse -Force .cmake-vagrant
         mkdir -p .cmake-vagrant
         cd .cmake-vagrant
-        cmake -G "Visual Studio 12" ..
+        cmake -G "Visual Studio 17 2022" ..
         if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
 
         cmake --build . --target clean
