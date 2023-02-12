@@ -48,7 +48,7 @@ Vagrant.configure("2") do |config|
     if ENV['NO_PKG'] != "true"
       ubuntu.vm.provision "shell", inline: <<-SHELL
         apt-get update
-        apt-get install -y zlib1g-dev libssl-dev python3
+        apt-get install -y zlib1g-dev libssl-dev libmbedtls-dev python3
         apt-get install -y build-essential cmake ninja-build
         apt-get install -y autoconf automake libtool
       SHELL
