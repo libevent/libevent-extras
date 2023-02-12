@@ -82,7 +82,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "freebsd" do |freebsd|
     system('tar --overwrite --transform=s/libevent/libevent-freebsd/ -xf .vagrant/libevent.tar -C .vagrant/')
 
-    freebsd.vm.box = "freebsd/FreeBSD-11.2-STABLE"
+    freebsd.vm.box = "freebsd/FreeBSD-12.4-STABLE"
     freebsd.vm.synced_folder ".vagrant/libevent-freebsd", "/vagrant",
       type: "rsync", group: "wheel"
 
