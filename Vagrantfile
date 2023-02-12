@@ -41,7 +41,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "ubuntu" do |ubuntu|
     system('tar --overwrite --transform=s/libevent/libevent-linux/ -xf .vagrant/libevent.tar -C .vagrant/')
 
-    ubuntu.vm.box = "ubuntu/xenial64"
+    ubuntu.vm.box = "ubuntu/focal64"
     ubuntu.vm.synced_folder ".vagrant/libevent-linux", "/vagrant",
       type: "rsync"
 
