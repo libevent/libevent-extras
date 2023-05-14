@@ -94,7 +94,7 @@ Vagrant.configure("2") do |config|
 
     if ENV['NO_PKG'] != "true"
       freebsd.vm.provision "shell", inline: <<-SHELL
-        pkg install --yes openssl cmake ninja automake autotools gmake
+        pkg install --yes openssl cmake ninja automake autotools gmake git
       SHELL
     end
 
@@ -236,7 +236,7 @@ Vagrant.configure("2") do |config|
       osx.vm.provision "shell", privileged: false, inline: <<-SHELL
         ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-        for pkg in libtool openssl ninja cmake autoconf automake; do
+        for pkg in pkg-config libtool openssl ninja cmake autoconf automake; do
           brew install $pkg || brew upgrade $pkg
         done
       SHELL
